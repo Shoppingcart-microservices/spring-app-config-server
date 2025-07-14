@@ -5,7 +5,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/KonPed/spring-app-config-server.git
+          uri: https://github.com/KonPed/config-repo.git
           clone-on-start: true
 
 eureka:
