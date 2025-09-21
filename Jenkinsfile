@@ -1,9 +1,16 @@
 pipeline {
-    def repourl = "${REGISTRY_URL}/${PROJECT_ID}/${ARTIFACT_REGISTRY}";
-    def mvnHome = tool name: 'maven', type: 'maven';
-    def mvnCMD = "${mvnHome}/bin/mvn";
 
-    agent: any
+    environment {
+        PROJECT_ID        = ${PROJECT_ID}
+        REGISTRY_URL      = ${REGISTRY_URL}
+        ARTIFACT_REGISTRY = ${ARTIFACT_REGISTRY}
+        IMAGE_NAME        = "config-server"
+        CLUSTER_NAME      = ${CLUSTER}
+        LOCATION          = ${ZONE}
+        REPO_URL          = "${REGISTRY_URL}/${PROJECT_ID}/${ARTIFACT_REGISTRY}"
+    }
+
+    agent any
 
     stage("Checkout Git Branch") {
         steps {
