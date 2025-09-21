@@ -22,8 +22,12 @@ pipeline {
         }
         stage("Build and Push Image") {
             steps {
-                withCredentials([file(credentialsId: 'blabla', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    sh """
+                script {
+                    def mvnHome = tool name: 'maven', type: 'maven'
+                    def mvnCMD = "${mvnHome}/bin/mvn"
+
+                    withCredentials([file(credentialsId: 'blabla', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh """
                         echo "Activating GCP service account..."
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
                         gcloud config set project ${PROJECT_ID}
@@ -32,21 +36,26 @@ pipeline {
                         gcloud auth configure-docker ${REGISTRY_URL} --quiet
 
                         echo "Building and pushing image with Jib..."
-                        ${mvnCMD} clean install jib:build -DREPO_URL=${repourl}
+                        ${mvnCMD} clean install jib:build -Dimage=${REPO_URL}/${IMAGE_NAME}:latest
                     """
+                    }
                 }
             }
         }
         stage("Deploy to GKE (Google k8s Engine)") {
-            sh "sed -i 's|IMAGE_URL|${repourl}|g' k8s/config-server-deployment.yaml"
-            steps([
-                    $class: 'KubernetesEngineBuilder',
-                    projectId: env.PROJECT_ID,
-                    clusterName: env.CLUSTER_NAME,
-                    location: env.LOCATION,
-                    manifestPattern: 'k8s/config-server-deployment.yaml',
-                    credentialsId: 'blabla',
-                    verifyDeployments: true])
+            steps {
+                script {
+                    sh "sed -i 's|${REPO_URL}/${IMAGE_NAME}' k8s/config-server-deployment.yaml"
+                    step([
+                            $class: 'KubernetesEngineBuilder',
+                            projectId: env.PROJECT_ID,
+                            clusterName: env.CLUSTER_NAME,
+                            location: env.LOCATION,
+                            manifestPattern: 'k8s/config-server-deployment.yaml',
+                            credentialsId: 'blabla',
+                            verifyDeployments: true])
+                }
+            }
         }
     }
 }
