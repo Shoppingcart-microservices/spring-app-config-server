@@ -17,7 +17,7 @@ pipeline {
             steps {
                 git branch: 'develop'
                 url: 'https://github.com/Shoppingcart-microservices/spring-app-config-server.git'
-                credentialsId: 'blabla'
+                credentialsId: 'git'
             }
         }
         stage("Build and Push Image") {
@@ -39,7 +39,7 @@ pipeline {
         }
         stage("Deploy to GKE (Google k8s Engine)") {
             sh "sed -i 's|IMAGE_URL|${repourl}|g' k8s/config-server-deployment.yaml"
-            step([
+            steps([
                     $class: 'KubernetesEngineBuilder',
                     projectId: env.PROJECT_ID,
                     clusterName: env.CLUSTER_NAME,
