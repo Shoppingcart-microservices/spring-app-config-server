@@ -28,7 +28,7 @@ pipeline {
                     def mvnHome = tool name: 'maven', type: 'maven'
                     def mvnCMD = "${mvnHome}/bin/mvn"
 
-                    withCredentials([file(credentialsId: 'blabla', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    withCredentials([file(credentialsId: 'GCP', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                         sh """
                         echo "Activating GCP service account..."
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
@@ -54,7 +54,7 @@ pipeline {
                             clusterName      : env.CLUSTER_NAME,
                             location         : env.LOCATION,
                             manifestPattern  : 'k8s/config-server-deployment.yaml',
-                            credentialsId    : 'blabla',
+                            credentialsId    : 'GCPproject',
                             verifyDeployments: true])
                 }
             }
