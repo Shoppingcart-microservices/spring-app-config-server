@@ -1,13 +1,13 @@
 pipeline {
 
     environment {
-        PROJECT_ID        = "${PROJECT_ID}"
-        REGISTRY_URL      = "${REGISTRY_URL}"
+        PROJECT_ID = "${PROJECT_ID}"
+        REGISTRY_URL = "${REGISTRY_URL}"
         ARTIFACT_REGISTRY = "${ARTIFACT_REGISTRY}"
-        IMAGE_NAME        = "config-server"
-        CLUSTER_NAME      = "${CLUSTER}"
-        LOCATION          = "${ZONE}"
-        REPO_URL          = "${REGISTRY_URL}/${PROJECT_ID}/${ARTIFACT_REGISTRY}"
+        IMAGE_NAME = "config-server"
+        CLUSTER_NAME = "${CLUSTER}"
+        LOCATION = "${ZONE}"
+        REPO_URL = "${REGISTRY_URL}/${PROJECT_ID}/${ARTIFACT_REGISTRY}"
     }
 
     agent any
@@ -15,9 +15,11 @@ pipeline {
     stages {
         stage("Checkout Git Branch") {
             steps {
-                git branch: 'develop'
-                url: 'https://github.com/Shoppingcart-microservices/spring-app-config-server.git'
-                credentialsId: 'git'
+                git([
+                        url          : 'https://github.com/Shoppingcart-microservices/spring-app-config-server.git',
+                        branch       : 'develop',
+                        credentialsId: 'git'
+                ])
             }
         }
         stage("Build and Push Image") {
@@ -47,12 +49,12 @@ pipeline {
                 script {
                     sh "sed -i 's|${REPO_URL}/${IMAGE_NAME}' k8s/config-server-deployment.yaml"
                     step([
-                            $class: 'KubernetesEngineBuilder',
-                            projectId: env.PROJECT_ID,
-                            clusterName: env.CLUSTER_NAME,
-                            location: env.LOCATION,
-                            manifestPattern: 'k8s/config-server-deployment.yaml',
-                            credentialsId: 'blabla',
+                            $class           : 'KubernetesEngineBuilder',
+                            projectId        : env.PROJECT_ID,
+                            clusterName      : env.CLUSTER_NAME,
+                            location         : env.LOCATION,
+                            manifestPattern  : 'k8s/config-server-deployment.yaml',
+                            credentialsId    : 'blabla',
                             verifyDeployments: true])
                 }
             }
