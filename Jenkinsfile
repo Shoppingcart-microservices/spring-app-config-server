@@ -54,7 +54,7 @@ pipeline {
                         projectId        : env.PROJECT_ID,
                         clusterName      : env.CLUSTER_NAME,
                         location         : env.LOCATION,
-                        manifestPattern  : 'k8s/config-server-deployment.yaml',
+                        manifestPattern  : 'k8s/*.yaml',
                         credentialsId    : 'GCPproject',
                         verifyDeployments: true])
             }
