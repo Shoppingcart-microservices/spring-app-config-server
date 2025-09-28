@@ -47,7 +47,7 @@ pipeline {
         stage("Deploy to GKE (Google k8s Engine)") {
             steps {
                 script {
-                    sh "sed -i 's|IMAGE_URL|${REPO_URL}/${IMAGE_NAME}|g' k8s/config-server-deployment.yaml"
+                    sh "sed -i 's|IMAGE_URL|${REPO_URL}|g' k8s/config-server-deployment.yaml"
                 }
                 step([
                         $class           : 'KubernetesEngineBuilder',
