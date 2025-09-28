@@ -48,15 +48,15 @@ pipeline {
             steps {
                 script {
                     sh "sed -i 's|IMAGE_URL|${REPO_URL}/${IMAGE_NAME}|g' k8s/config-server-deployment.yaml"
-                    step([
-                            $class           : 'KubernetesEngineBuilder',
-                            projectId        : env.PROJECT_ID,
-                            clusterName      : env.CLUSTER_NAME,
-                            location         : env.LOCATION,
-                            manifestPattern  : 'k8s/config-server-deployment.yaml',
-                            credentialsId    : 'GCPproject',
-                            verifyDeployments: true])
                 }
+                step([
+                        $class           : 'KubernetesEngineBuilder',
+                        projectId        : env.PROJECT_ID,
+                        clusterName      : env.CLUSTER_NAME,
+                        location         : env.LOCATION,
+                        manifestPattern  : 'k8s/config-server-deployment.yaml',
+                        credentialsId    : 'GCP',
+                        verifyDeployments: true])
             }
         }
     }
